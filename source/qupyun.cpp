@@ -39,6 +39,7 @@ public:
     }
 
     inline QString upyunAPIDomain() const;
+    inline QByteArray extraParamHeader(QUpYun::ExtraParam param) const;
 
     QNetworkReply *sendRequest(QNetworkAccessManager::Operation method,
                                const QString &uri,
@@ -313,6 +314,54 @@ QString QUpYun::Private::upyunAPIDomain() const
     }
 }
 
+QByteArray QUpYun::Private::extraParamHeader(QUpYun::ExtraParam param) const
+{
+    switch (param) {
+        case X_GMKERL_TYPE:
+            return QByteArray("x-gmkerl-type");
+        case X_GMKERL_VALUE:
+            return QByteArray("x-gmkerl-value");
+        case X_GMKERL_QUALITY:
+            return QByteArray("x-gmkerl-quality");
+        case X_GMKERL_UNSHARP:
+            return QByteArray("x-gmkerl-unsharp");
+        case X_GMKERL_THUMBNAIL:
+            return QByteArray("x-gmkerl-thumbnail");
+        case X_GMKERL_ROTATE:
+            return QByteArray("x-gmkerl-rotate");
+        case X_GMKERL_CROP:
+            return QByteArray("x-gmkerl-crop");
+        case X_GMKERL_EXIF_SWITCH:
+            return QByteArray("x-gmkerl-exif-switch");
+        case FIX_MAX:
+            return QByteArray("fix_max");
+        case FIX_MIN:
+            return QByteArray("fix_min");
+        case FIX_WIDTH_OR_HEIGHT:
+            return QByteArray("fix_width_or_height");
+        case FIX_WIDTH:
+            return QByteArray("fix_width");
+        case FIX_HEIGHT:
+            return QByteArray("fix_height");
+        case SQUARE:
+            return QByteArray("square");
+        case FIX_BOTH:
+            return QByteArray("fix_both");
+        case FIX_SCALE:
+            return QByteArray("fix_scale");
+        case ROTATE_AUTO:
+            return QByteArray("auto");
+        case ROTATE_90:
+            return QByteArray("90");
+        case ROTATE_180:
+            return QByteArray("180");
+        case ROTATE_270:
+            return QByteArray("270");
+    default:
+        break;
+    }
+}
+
 QNetworkReply * QUpYun::Private::sendRequest(QNetworkAccessManager::Operation method,
                                             const QString &uri,
                                             const QByteArray &data,
@@ -568,3 +617,287 @@ QDebug operator<<(QDebug dbg, const ItemInfo &itemInfo)
             << "date=" << itemInfo.date << ")";
     return dbg.space();
 }
+
+/*!
+ * \struct FileInfo
+ * \brief File information.
+ */
+
+/*!
+ * \var QString FileInfo::type
+ * \brief Returns "file" if is a file, "folder" if folder.
+ */
+
+/*!
+ * \var qulonglong FileInfo::size
+ * \brief Returns file size.
+ */
+
+/*!
+ * \var QDateTime FileInfo::createDate
+ * \brief Returns file create date.
+ */
+
+
+/*!
+ * \struct PicInfo
+ * \brief Picture information.
+ */
+
+/*!
+ * \var QString PicInfo::type
+ * \brief Returns picture type.
+ */
+
+/*!
+ * \var qulonglong PicInfo::width
+ * \brief Returns picture width.
+ */
+
+/*!
+ * \var qulonglong PicInfo::height
+ * \brief Returns picture height.
+ */
+
+/*!
+ * \var qulonglong PicInfo::frames
+ * \brief Returns picture frames amount.
+ */
+
+
+/*!
+ * \struct ItemInfo
+ * \brief Item information.
+ */
+
+/*!
+ * \var QString ItemInfo::name
+ * \brief Returns item name.
+ */
+
+/*!
+ * \var bool ItemInfo::isFolder
+ * \brief Returns true if this item is a folder.
+ */
+
+/*!
+ * \var qulonglong ItemInfo::size
+ * \brief Returns item size.
+ */
+
+/*!
+ * \var QDateTime PicInfo::date
+ * \brief Returns item date.
+ */
+
+/*!
+ * \enum QUpYun::EndPoint
+ * \brief End point of UpYun.
+ */
+
+/*!
+ * \var QUpYun::EndPoint QUpYun::ED_AUTO
+ * \brief Selects end point by network automatically.
+ *
+ * This will set end point to v0.api.upyun.com.
+ */
+
+/*!
+ * \var QUpYun::EndPoint QUpYun::ED_TELECOM
+ * \brief Telecom end point.
+ *
+ * This will set end point to v1.api.upyun.com.
+ */
+
+/*!
+ * \var QUpYun::EndPoint QUpYun::ED_CNC
+ * \brief CNC end point.
+ *
+ * This will set end point to v2.api.upyun.com.
+ */
+
+/*!
+ * \var QUpYun::EndPoint QUpYun::ED_CTT
+ * \brief CTT end point.
+ *
+ * This will set end point to v3.api.upyun.com.
+ */
+
+
+/*!
+ * \enum QUpYun::ExtraParam
+ * \brief Valid extra parameters when uploads a file.
+ *
+ * Uses these extra parameters with a file which is not a picture will cause
+ * an upload failure.
+ *
+ * \note Original picture will not be saved if append any extra parameters.
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_TYPE
+ * \brief Thumbs type.
+ *
+ * Uses this parameter if original pictures are unnecessary, eg. account images.
+ *
+ * Valid values are:
+ *
+ * \li \c FIX_MAX : Fix maximum edge, shorter edges suit by themselves.
+ * \li \c FIX_MIN : Fix minimum edge, longer edges suit by themselves.
+ * \li \c FIX_WIDTH_OR_HEIGHT : Fix both width and height. Do not scale if not long enough.
+ * \li \c FIX_WIDTH : Fix width, height suits by itself.
+ * \li \c FIX_HEIGHT : Fix height, width suits by itself.
+ * \li \c FIX_BOTH : Fix both width and height. Scales if not long enough.
+ * \li \c FIX_SCALE : Scale (1-99).
+ * \li \c SQUARE : Scale to square.
+ *
+ * \note This parameter MUST be with \c X_GMKERL_VALUE together,
+ * otherwise it is unavaliable.
+ *
+ * \sa QUpYun::X_GMKERL_VALUE
+ * \sa http://wiki.upyun.com/index.php?title=%E7%BC%A9%E7%95%A5%E5%9B%BE%E6%96%B9%E5%BC%8F%E5%B7%AE%E5%88%AB%E4%B8%BE%E4%BE%8B
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_VALUE
+ * \brief Thumbs value.
+ *
+ * If \c X_GMKERL_TYPE is \c FIX_WIDTH_OR_HEIGHT or \c FIX_BOTH, the value
+ * should be widthxheight (eg. 200x150); otherwise be a number (eg. 150).
+ *
+ * \note This parameter MUST be with \c X_GMKERL_TYPE together,
+ * otherwise it is unavaliable.
+ *
+ * \sa QUpYun::X_GMKERL_TYPE
+ * \sa http://wiki.upyun.com/index.php?title=%E7%BC%A9%E7%95%A5%E5%9B%BE%E6%96%B9%E5%BC%8F%E5%B7%AE%E5%88%AB%E4%B8%BE%E4%BE%8B
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_QUALITY
+ * \brief Thumbs quality (1-100). 95 by default.
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_UNSHARP
+ * \brief Image sharp. \c true by default.
+ *
+ * Valid values are \c true and \c false.
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_THUMBNAIL
+ * \brief Generates thumbnail.
+ * \note Defines thumb version before use this parameter.
+ * \sa http://wiki.upyun.com/index.php?title=%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BC%A9%E7%95%A5%E5%9B%BE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_ROTATE
+ * \brief Rotate pictures.
+ *
+ * Valid values are:
+ * \li \c ROTATE_AUTO : Automatically rotates by EXIF. If there is no EXIF,
+ * this value is invalid.
+ * \li \c ROTATE_90 : Rotates by 90.
+ * \li \c ROTATE_180 : Rotates by 180.
+ * \li \c ROTATE_270 : Rotates by 270.
+ *
+ * \sa QUpYun::ROTATE_AUTO
+ * \sa QUpYun::ROTATE_90
+ * \sa QUpYun::ROTATE_180
+ * \sa QUpYun::ROTATE_270
+ * \sa http://wiki.upyun.com/index.php?title=%E5%9B%BE%E7%89%87%E6%97%8B%E8%BD%AC
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_CROP
+ * \brief Crop picture.
+ *
+ * Valid value format is x,y,width,height (eg. 0,0,100,200).
+ * And x >= 0 && y >=0 && width > 0 && height
+ *
+ * \sa http://wiki.upyun.com/index.php?title=%E5%9B%BE%E7%89%87%E8%A3%81%E5%89%AA
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::X_GMKERL_EXIF_SWITCH
+ * \brief Stores EXIF.
+ *
+ * Valid values are \c true and \c false.
+ *
+ * UpYun will remove EXIF if the picture crops, scales or thumbnails, use this
+ * parameter if want to store EXIF.
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_MAX
+ * \brief Fix maximum edge, shorter edges suit by themselves.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_MIN
+ * \brief Fix minimum edge, longer edges suit by themselves.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_WIDTH_OR_HEIGHT
+ * \brief Fix both width and height. Do not scale if not long enough.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_WIDTH
+ * \brief Fix width, height suits by itself.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_HEIGHT
+ * \brief Fix height, width suits by itself.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::SQUARE
+ * \brief Scale to square.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_BOTH
+ * \brief Fix both width and height. Scales if not long enough.
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::FIX_SCALE
+ * \brief Scale (1-99).
+ * \sa QUpYun::X_GMKERL_TYPE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::ROTATE_AUTO
+ * \brief Automatically rotate by EXIF. If there is no EXIF,
+ * this value is invalid.
+ * \sa QUpYun::X_GMKERL_ROTATE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::ROTATE_90
+ * \brief Rotates by 90.
+ * \sa QUpYun::X_GMKERL_ROTATE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::ROTATE_180
+ * \brief Rotates by 180.
+ * \sa QUpYun::X_GMKERL_ROTATE
+ */
+
+/*!
+ * \var QUpYun::ExtraParam QUpYun::ROTATE_270
+ * \brief Rotates by 270.
+ * \sa QUpYun::X_GMKERL_ROTATE
+ */

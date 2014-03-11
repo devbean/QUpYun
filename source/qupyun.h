@@ -54,6 +54,31 @@ public:
         ED_CTT
     };
 
+    enum ExtraParam
+    {
+        X_GMKERL_TYPE,
+        X_GMKERL_VALUE,
+        X_GMKERL_QUALITY,
+        X_GMKERL_UNSHARP,
+        X_GMKERL_THUMBNAIL,
+        X_GMKERL_ROTATE,
+        X_GMKERL_CROP,
+        X_GMKERL_EXIF_SWITCH,
+
+        FIX_MAX,
+        FIX_MIN,
+        FIX_WIDTH_OR_HEIGHT,
+        FIX_WIDTH,
+        FIX_HEIGHT,
+        SQUARE,
+        FIX_BOTH,
+        FIX_SCALE,
+        ROTATE_AUTO,
+        ROTATE_90,
+        ROTATE_180,
+        ROTATE_270
+    };
+
     QUpYun(const QString &bucketName,
            const QString &userName,
            const QString &password,
