@@ -8,8 +8,56 @@
 #include "qupyun.h"
 
 static const char SEPARATOR = '/';
-static const QLatin1String &MKDIR = QLatin1String("folder");
+static const QByteArray &MKDIR = QByteArray("folder");
 static const char * const SDK_VERSION = "1.0";
+
+QByteArray QUpYun::extraParamHeader(QUpYun::ExtraParam param)
+{
+    switch (param) {
+        case X_GMKERL_TYPE:
+            return QByteArray("x-gmkerl-type");
+        case X_GMKERL_VALUE:
+            return QByteArray("x-gmkerl-value");
+        case X_GMKERL_QUALITY:
+            return QByteArray("x-gmkerl-quality");
+        case X_GMKERL_UNSHARP:
+            return QByteArray("x-gmkerl-unsharp");
+        case X_GMKERL_THUMBNAIL:
+            return QByteArray("x-gmkerl-thumbnail");
+        case X_GMKERL_ROTATE:
+            return QByteArray("x-gmkerl-rotate");
+        case X_GMKERL_CROP:
+            return QByteArray("x-gmkerl-crop");
+        case X_GMKERL_EXIF_SWITCH:
+            return QByteArray("x-gmkerl-exif-switch");
+        case FIX_MAX:
+            return QByteArray("fix_max");
+        case FIX_MIN:
+            return QByteArray("fix_min");
+        case FIX_WIDTH_OR_HEIGHT:
+            return QByteArray("fix_width_or_height");
+        case FIX_WIDTH:
+            return QByteArray("fix_width");
+        case FIX_HEIGHT:
+            return QByteArray("fix_height");
+        case SQUARE:
+            return QByteArray("square");
+        case FIX_BOTH:
+            return QByteArray("fix_both");
+        case FIX_SCALE:
+            return QByteArray("fix_scale");
+        case ROTATE_AUTO:
+            return QByteArray("auto");
+        case ROTATE_90:
+            return QByteArray("90");
+        case ROTATE_180:
+            return QByteArray("180");
+        case ROTATE_270:
+            return QByteArray("270");
+    default:
+        break;
+    }
+}
 
 enum API
 {
@@ -21,7 +69,7 @@ enum API
     Read,
     RemoveFile,
     FileProp
-};
+}; // end of class API
 
 class QUpYun::Private : public QObject
 {
@@ -42,7 +90,6 @@ public:
     }
 
     inline QString upyunAPIDomain() const;
-    inline QByteArray extraParamHeader(QUpYun::ExtraParam param) const;
 
     QNetworkReply *sendRequest(QNetworkAccessManager::Operation method,
                                const QString &uri,
@@ -70,7 +117,7 @@ public:
 
 private slots:
     void requestFinished(QNetworkReply *reply);
-};
+}; // end of class QUpYun::Private
 
 
 /*!
@@ -317,54 +364,6 @@ QString QUpYun::Private::upyunAPIDomain() const
     }
 }
 
-QByteArray QUpYun::Private::extraParamHeader(QUpYun::ExtraParam param) const
-{
-    switch (param) {
-        case X_GMKERL_TYPE:
-            return QByteArray("x-gmkerl-type");
-        case X_GMKERL_VALUE:
-            return QByteArray("x-gmkerl-value");
-        case X_GMKERL_QUALITY:
-            return QByteArray("x-gmkerl-quality");
-        case X_GMKERL_UNSHARP:
-            return QByteArray("x-gmkerl-unsharp");
-        case X_GMKERL_THUMBNAIL:
-            return QByteArray("x-gmkerl-thumbnail");
-        case X_GMKERL_ROTATE:
-            return QByteArray("x-gmkerl-rotate");
-        case X_GMKERL_CROP:
-            return QByteArray("x-gmkerl-crop");
-        case X_GMKERL_EXIF_SWITCH:
-            return QByteArray("x-gmkerl-exif-switch");
-        case FIX_MAX:
-            return QByteArray("fix_max");
-        case FIX_MIN:
-            return QByteArray("fix_min");
-        case FIX_WIDTH_OR_HEIGHT:
-            return QByteArray("fix_width_or_height");
-        case FIX_WIDTH:
-            return QByteArray("fix_width");
-        case FIX_HEIGHT:
-            return QByteArray("fix_height");
-        case SQUARE:
-            return QByteArray("square");
-        case FIX_BOTH:
-            return QByteArray("fix_both");
-        case FIX_SCALE:
-            return QByteArray("fix_scale");
-        case ROTATE_AUTO:
-            return QByteArray("auto");
-        case ROTATE_90:
-            return QByteArray("90");
-        case ROTATE_180:
-            return QByteArray("180");
-        case ROTATE_270:
-            return QByteArray("270");
-    default:
-        break;
-    }
-}
-
 QNetworkReply * QUpYun::Private::sendRequest(QNetworkAccessManager::Operation method,
                                             const QString &uri,
                                             const QByteArray &data,
@@ -400,9 +399,9 @@ QNetworkReply * QUpYun::Private::sendRequest(QNetworkAccessManager::Operation me
     bool isFolder = false;
     if (!params.isEmpty()) {
         isFolder = params.value(MKDIR).toBool();
-        QHash<QString, QVariant>::const_iterator i = params.constBegin();
+        QHash<QByteArray, QVariant>::const_iterator i = params.constBegin();
         while (i != params.constEnd()) {
-            request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
+            request.setRawHeader(i.key(), i.value().toByteArray());
             ++i;
         }
     }
@@ -501,8 +500,8 @@ void QUpYun::Private::requestFinished(QNetworkReply *reply)
 {
     QByteArray data = reply->readAll();
 #ifdef QT_DEBUG
-    qDebug() << data
-             << reply->rawHeaderPairs();
+    qDebug() << "Reply: " << data << endl
+             << "Raw headers: " << endl << reply->rawHeaderPairs();
 #endif
     if (reply->error() == QNetworkReply::NoError) {
         API currentAPI = requests.value(reply);

@@ -45,7 +45,7 @@ class QUPYUNSHARED_EXPORT QUpYun : public QObject
 {
     Q_OBJECT
 public:
-    typedef QHash<QString, QVariant> RequestParams;
+    typedef QHash<QByteArray, QVariant> RequestParams;
 
     enum EndPoint
     {
@@ -79,6 +79,8 @@ public:
         ROTATE_180,
         ROTATE_270
     };
+
+    static QByteArray extraParamHeader(QUpYun::ExtraParam param);
 
     QUpYun(const QString &bucketName,
            const QString &userName,
@@ -131,6 +133,6 @@ private:
     class Private;
     QUpYun::Private *d;
     friend class QUpYun::Private;
-};
+}; // end of class QUpYun
 
 #endif // QUPYUN_H
