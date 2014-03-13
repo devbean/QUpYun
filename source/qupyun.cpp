@@ -1,6 +1,9 @@
+#include <QCryptographicHash>
+#include <QDebug>
 #include <QFile>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include <QStringList>
 
 #include "qupyun.h"
 

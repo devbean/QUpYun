@@ -1,6 +1,7 @@
 #ifndef QUPYUN_H
 #define QUPYUN_H
 
+#include <QDateTime>
 #include <QNetworkReply>
 #include <QObject>
 
